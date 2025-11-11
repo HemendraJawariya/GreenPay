@@ -1,0 +1,92 @@
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
+
+import {
+  useAuthUser,
+  useIsAuthenticated,
+  useIsInitialized,
+} from "@/stores/auth-store";
+import { User } from "@/generated/prisma/client";
+import { Button } from "@/components/ui/button";
+import RootLayout from "@/components/layouts/RootLayout";
+import Loading from "@/components/Loading";
+
+export const withAuth = <P extends object>(
+  Component: React.ComponentType<P>,
+  redirectTo: string = "/login",
+  roles?: User["role"][],
+) => {
+  return function AuthenticatedComponent(props: P) {
+    const isAuthenticated = useIsAuthenticated();
+    const isInitialized = useIsInitialized();
+    const user = useAuthUser();
+
+    const router = useRouter();
+
+    const shouldBlockRender = !isInitialized;
+
+    useEffect(() => {
+      if (isInitialized && !isAuthenticated) {
+        router.replace(redirectTo);
+      }
+    }, [isInitialized, isAuthenticated, router]);
+
+    if (shouldBlockRender || (!isAuthenticated && isInitialized)) {
+      return <Loading />;
+    }
+
+    if (roles && (!user?.role || !roles.includes(user.role))) {
+      return (
+        <RootLayout>
+          <div className="flex min-h-screen w-full flex-col items-center justify-center space-y-3 text-center">
+            <div>
+              <h1 className="text-primary text-6xl font-bold">401</h1>
+              <h2 className="text-2xl font-semibold">No Access</h2>
+              <p className="text-muted-foreground max-w-md text-sm">
+               Sorry, you do not have access to this page.
+              </p>
+            </div>
+            <Button asChild className="flex items-center gap-2">
+              <Link href="/">
+                <ChevronLeft className="h-4 w-4" />
+                Back to Home
+              </Link>
+            </Button>
+          </div>
+        </RootLayout>
+      );
+    }
+
+    return <Component {...props} />;
+  };
+};
+
+export const withGuest = <P extends object>(
+  Component: React.ComponentType<P>,
+  redirectTo: string = "/",
+) => {
+  return function GuestComponent(props: P) {
+    const isAuthenticated = useIsAuthenticated();
+    const isInitialized = useIsInitialized();
+
+    const router = useRouter();
+
+    const shouldBlockRender = !isInitialized;
+
+    useEffect(() => {
+      if (isInitialized && isAuthenticated) {
+        router.replace(redirectTo);
+      }
+    }, [isAuthenticated, isInitialized, router]);
+
+    if (shouldBlockRender || (isAuthenticated && isInitialized)) {
+      return <Loading />;
+    }
+
+    return <Component {...props} />;
+  };
+};

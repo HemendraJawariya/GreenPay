@@ -1,0 +1,104 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id           String               @id @default(uuid())
+  name         String
+  email        String               @unique
+  password     String
+  points       Int                  @default(0)
+  balance      Decimal              @default(0.00) @db.Decimal(18, 2)
+  currentRank  Int?
+  lastRank     Int?
+  role         Role                 @default(USER)
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  balanceTxs   BalanceTransaction[]
+  handledSetor TrashDeposit[]       @relation("HandledSetor")
+  deposits     TrashDeposit[]       @relation("UserDeposits")
+  withdraws    WithdrawRequest[]
+}
+
+model TrashDeposit {
+  id        String             @id @default(uuid())
+  userId    String
+  petugasId String?
+  status    Status
+  createdAt DateTime           @default(now())
+  signature String
+  petugas   User?              @relation("HandledSetor", fields: [petugasId], references: [id])
+  user      User               @relation("UserDeposits", fields: [userId], references: [id])
+  items     TrashDepositItem[]
+}
+
+model TrashDepositItem {
+  id             String       @id @default(uuid())
+  trashDepositId String
+  trashType      TrashType
+  weight         Float
+  points         Int
+  trashDeposit   TrashDeposit @relation(fields: [trashDepositId], references: [id])
+}
+
+model BalanceTransaction {
+  id        String         @id @default(uuid())
+  userId    String
+  amount    Decimal        @db.Decimal(18, 2)
+  reason    String
+  refType   BalanceRefType
+  refId     String?
+  createdAt DateTime       @default(now())
+  user      User           @relation(fields: [userId], references: [id])
+}
+
+model WithdrawRequest {
+  id          String         @id @default(uuid())
+  userId      String
+  amount      Decimal        @db.Decimal(18, 2)
+  method      String
+  destination String
+  status      WithdrawStatus
+  createdAt   DateTime       @default(now())
+  approvedAt  DateTime?
+  user        User           @relation(fields: [userId], references: [id])
+}
+
+enum BalanceRefType {
+  REWARD
+  WITHDRAW
+  VOUCHER
+  MANUAL
+}
+
+enum WithdrawStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum Role {
+  USER
+  PETUGAS
+  ADMIN
+}
+
+enum TrashType {
+  PLASTIC
+  PAPER
+  METAL
+  ORGANIC
+  OTHER
+}
+
+enum Status {
+  APPROVED
+  REJECTED
+}

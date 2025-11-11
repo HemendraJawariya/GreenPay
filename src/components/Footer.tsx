@@ -1,0 +1,98 @@
+import * as React from "react";
+import Link from "next/link";
+import { Instagram, Twitter } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import GreenPayIcon from "./icons/GreenPay";
+
+export default function Footer() {
+  return (
+    <footer className="bg-sidebar border-t">
+      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 py-10 md:grid-cols-3">
+        {/* Logo & Description */}
+        <div className="space-y-3">
+          <h1 className="text-2xl font-semibold">
+            <Link href="/" className="flex items-center gap-x-1">
+              <GreenPayIcon className="text-primary h-8 w-8" />
+              <span>
+                <span className="text-primary">Green</span>Pay
+              </span>
+            </Link>
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            A digital platform that converts waste into balance. Clean environment, fuller wallet.
+          </p>
+        </div>
+
+        {/* Navigation */}
+        <div className="space-y-3">
+          <h3 className="text-foreground font-semibold">Navigation</h3>
+          <ul className="text-muted-foreground space-y-2 text-sm">
+            <li>
+              <Link
+                className="hover:text-primary transition-colors duration-300"
+                href="/"
+              >
+                Home
+              </Link>
+            </li>
+            <li>
+              <Link
+                className="hover:text-primary transition-colors duration-300"
+                href="/how-it-works"
+              >
+                How It Works
+              </Link>
+            </li>
+            <li>
+              <Link
+                className="hover:text-primary transition-colors duration-300"
+                href="/leaderboard"
+              >
+                Leaderboard
+              </Link>
+            </li>
+            <li>
+              <Link
+                className="hover:text-primary transition-colors duration-300"
+                href="/about"
+              >
+                About Us
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* Contact & Social Media */}
+        <div>
+          <h3 className="text-foreground mb-3 font-semibold">Contact</h3>
+          <p className="text-muted-foreground text-sm">support@greenpay.id</p>
+          <div className="mt-4 flex gap-3">
+            <Button variant="outline" size="icon" asChild>
+              <Link
+                href="https://instagram.com"
+                target="_blank"
+                aria-label="Instagram"
+              >
+                <Instagram className="text-foreground h-4 w-4" />
+              </Link>
+            </Button>
+            <Button variant="outline" size="icon" asChild>
+              <Link
+                href="https://twitter.com"
+                target="_blank"
+                aria-label="Twitter"
+              >
+                <Twitter className="text-foreground h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Copyright */}
+      <div className="text-muted-foreground border-t py-4 text-center text-xs">
+        © {new Date().getFullYear()} GreenPay. All rights reserved.
+      </div>
+    </footer>
+  );
+}

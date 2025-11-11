@@ -1,0 +1,33 @@
+import { verifyToken } from "@/lib/jwt";
+import { response } from "@/lib/response";
+import { NextRequest } from "next/server";
+
+export async function GET(req: NextRequest) {
+  try {
+    const token = req.cookies.get("auth_token")?.value;
+
+    // jika token tidak ada
+    if (!token) {
+      const res = response(401, "Unauthenticated");
+      res.cookies.delete("auth_token");
+
+      return res;
+    }
+
+    const payload = verifyToken(token);
+
+    // jika tidak ada payload atau tidak terverifikasi
+    if (!payload) {
+      const res = response(401, "Unauthenticated");
+      res.cookies.delete("auth_token");
+
+      return res;
+    }
+
+    return response(200, payload);
+  } catch (err) {
+    // menangkap error pada server
+    console.error(`error : ${(err as Error).message}`);
+    return response(500, "An error occurred");
+  }
+}
