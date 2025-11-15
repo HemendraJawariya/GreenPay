@@ -37,7 +37,7 @@ export default function WhyUsSection() {
 
       {/* content */}
       <div className="flex flex-col items-center justify-center space-y-1 text-center">
-        <h1 className="text-4xl font-bold md:text-5xl">Kenapa Kami?</h1>
+        <h1 className="text-4xl font-bold md:text-5xl">Why Us?</h1>
         <p className="text-muted-foreground max-w-md text-sm">
        Reasons why thousands of people choose GreenPay
         </p>
