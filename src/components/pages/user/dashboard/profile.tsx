@@ -95,7 +95,7 @@ export default function ProfileSection() {
                         <Info className="h-4 w-4" />
                       </TooltipTrigger>
                       <TooltipContent className="max-w-48 text-center">
-                        <p>Total accumulated balance</p>
+                        <p>Total accumulated balance</p> 
                       </TooltipContent>
                     </Tooltip>
                   </p>
