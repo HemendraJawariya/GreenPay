@@ -110,7 +110,7 @@ export default function ProfileSection() {
                         ? user?.balance != null
                           ? new Intl.NumberFormat("id-ID", {
                               style: "currency",
-                              currency: "IDR",
+                              currency: "INR",
                             }).format(Number(user.balance))
                           : "0"
                         : "******"}
