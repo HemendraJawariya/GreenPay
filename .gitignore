@@ -1,0 +1,15 @@
+node_modules
+
+# Build output
+.next/
+
+# Environment files
+.env*
+!.env.local.example
+
+# Build output
+.next/
+
+# Environment files
+.env*
+!.env.local.example
