@@ -208,7 +208,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/vercel/sandbox/primary/src/generated/prisma",
+      "value": "/home/ankit/Downloads/GreenPay/GreenPay/src/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -217,12 +217,12 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "rhel-openssl-3.0.x",
+        "value":"debian-openssl-3.0.x",
         "native": true
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/vercel/sandbox/primary/prisma/schema.prisma",
+    "sourceFilePath": "/home/ankit/Downloads/GreenPay/GreenPay/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
