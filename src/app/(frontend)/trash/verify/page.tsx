@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { BrowserMultiFormatReader } from "@zxing/library";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -41,7 +41,7 @@ function TrashVerifyPage() {
   const { setQRData } = useQRActions();
   const router = useRouter();
 
-  const resetToInitialState = () => {
+  const resetToInitialState = useCallback(() => {
     stopScan();
     stopCamera();
     setActiveTab("camera");
@@ -52,7 +52,7 @@ function TrashVerifyPage() {
     if (uploadedImage) {
       URL.revokeObjectURL(uploadedImage);
     }
-  };
+  }, [uploadedImage]);
 
   const verifyData = async (encoded: string) => {
     try {
@@ -85,69 +85,6 @@ function TrashVerifyPage() {
     }
   };
 
-  const startCamera = async () => {
-    if (
-      !selectedDeviceId ||
-      !videoRef.current ||
-      !codeReader.current ||
-      !mountedRef.current
-    )
-      return;
-
-    let constraints: MediaStreamConstraints;
-
-    try {
-      constraints = {
-        video: {
-          deviceId: { exact: selectedDeviceId },
-          width: { ideal: 640 },
-          height: { ideal: 480 },
-          facingMode: { ideal: "environment" },
-        },
-      };
-
-      let stream;
-      try {
-        stream = await navigator.mediaDevices.getUserMedia(constraints);
-      } catch (error) {
-        console.warn("Exact deviceId failed, retry without exact:", error);
-
-        constraints = {
-          video: {
-            width: { ideal: 640 },
-            height: { ideal: 480 },
-            facingMode: { ideal: "environment" },
-          },
-        };
-        stream = await navigator.mediaDevices.getUserMedia(constraints);
-      }
-
-      if (videoRef.current && mountedRef.current) {
-        videoRef.current.srcObject = stream;
-        setCameraActive(true);
-        videoRef.current.onloadedmetadata = () => {
-          videoRef.current?.play().catch(console.error);
-        };
-      }
-    } catch (error) {
-      console.error("Camera start error:", error);
-      toast.error(`Unable to access camera: ${(error as Error).message}`);
-
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { ideal: "environment" } },
-        });
-        if (videoRef.current && mountedRef.current) {
-          videoRef.current.srcObject = stream;
-          setCameraActive(true);
-        }
-      } catch (fallbackError) {
-        console.error("Fallback camera error:", fallbackError);
-        toast.error("Unable to access any camera.");
-      }
-    }
-  };
-
   const stopCamera = () => {
     if (videoRef.current && videoRef.current.srcObject) {
       const stream = videoRef.current.srcObject as MediaStream;
@@ -162,14 +99,14 @@ function TrashVerifyPage() {
       !selectedDeviceId ||
       !videoRef.current ||
       !codeReader.current ||
-      !mountedRef.current ||
-      !cameraActive
+      !mountedRef.current
     )
       return;
 
     if (scanningRef.current) return;
 
     scanningRef.current = true;
+    setCameraActive(true);
     setScanning(true);
 
     try {
@@ -214,14 +151,11 @@ function TrashVerifyPage() {
 
   const handleCameraAction = async () => {
     if (!cameraActive) {
-      await startCamera();
-      setTimeout(() => {
-        if (mountedRef.current) startScan();
-      }, 500);
+      await startScan();
     } else if (scanning) {
       stopScan();
     } else {
-      startScan();
+      await startScan();
     }
   };
 
@@ -342,10 +276,7 @@ function TrashVerifyPage() {
 
     setTimeout(async () => {
       if (mountedRef.current) {
-        await startCamera();
-        setTimeout(() => {
-          if (mountedRef.current) startScan();
-        }, 500);
+        await startScan();
       }
     }, 300);
   };
